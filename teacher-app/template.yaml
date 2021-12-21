@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  teacher-app
+
+  Sample SAM Template for teacher-app
+
+Globals:
+  Function:
+    Runtime: python3.8
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref Table
+        STREAM_NAME: stream-test
+    MemorySize: 128
+    Timeout: 5
+
+Resources:
+
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: teacher_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: teacher_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: !Sub ${AWS::StackName}-teachers
+
+  GetTeacher:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handler
+      Handler: get.lambda_handler
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        GetTeacher:
+          Type: Api 
+          Properties:
+            Path: /teacher/{teacher_id}
+            Method: get
+
+  PostTeacher:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handler
+      Handler: post.lambda_handler
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        PostTeacher:
+          Type: Api 
+          Properties:
+            Path: /teacher
+            Method: post
+  
+  UpdateTeacher:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handler
+      Handler: update.lambda_handler
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonKinesisFullAccess
+      Events:
+        UpdateTeacher:
+          Type: Api 
+          Properties:
+            Path: /teacher/{teacher_id}
+            Method: put
+
+  DeleteTeacher:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handler
+      Handler: delete.lambda_handler
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        DeleteTeacher:
+          Type: Api 
+          Properties:
+            Path: /teacher/{teacher_id}
+            Method: delete
+
+
