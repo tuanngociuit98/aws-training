@@ -30,10 +30,22 @@ Resources:
         WriteCapacityUnits: 1
       TableName:
         Fn::Sub: ${AWS::StackName}-teachers
+  GetAllTeacher:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://samsls/572d09ad4c0c90caf0763dc341e9cd90
+      Handler: getAll.lambda_handler
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        GetTeacher:
+          Type: Api
+          Properties:
+            Path: /teachers
+            Method: get
   GetTeacher:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/0ad6b27aba541fe68dc05605abae6064
+      CodeUri: s3://samsls/572d09ad4c0c90caf0763dc341e9cd90
       Handler: get.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -45,7 +57,7 @@ Resources:
   PostTeacher:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/0ad6b27aba541fe68dc05605abae6064
+      CodeUri: s3://samsls/572d09ad4c0c90caf0763dc341e9cd90
       Handler: post.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -57,7 +69,7 @@ Resources:
   UpdateTeacher:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/0ad6b27aba541fe68dc05605abae6064
+      CodeUri: s3://samsls/572d09ad4c0c90caf0763dc341e9cd90
       Handler: update.lambda_handler
       Policies:
       - AmazonDynamoDBFullAccess
@@ -71,7 +83,7 @@ Resources:
   DeleteTeacher:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/0ad6b27aba541fe68dc05605abae6064
+      CodeUri: s3://samsls/572d09ad4c0c90caf0763dc341e9cd90
       Handler: delete.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:

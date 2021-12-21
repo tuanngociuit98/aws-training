@@ -44,7 +44,7 @@ Resources:
   GetCourse:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/7a083e99a94ebbf48c63ecc063b7854b
+      CodeUri: s3://samsls/f4617a80a3c69739d7958c84619c0cfa
       Handler: get.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -56,7 +56,7 @@ Resources:
   PostCourse:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/7a083e99a94ebbf48c63ecc063b7854b
+      CodeUri: s3://samsls/f4617a80a3c69739d7958c84619c0cfa
       Handler: post.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -68,7 +68,7 @@ Resources:
   UpdateCourse:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/7a083e99a94ebbf48c63ecc063b7854b
+      CodeUri: s3://samsls/f4617a80a3c69739d7958c84619c0cfa
       Handler: update.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -80,7 +80,7 @@ Resources:
   Deletecourse:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/7a083e99a94ebbf48c63ecc063b7854b
+      CodeUri: s3://samsls/f4617a80a3c69739d7958c84619c0cfa
       Handler: delete.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:
@@ -92,7 +92,7 @@ Resources:
   UpdateTeacherName:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://samsls/7a083e99a94ebbf48c63ecc063b7854b
+      CodeUri: s3://samsls/f4617a80a3c69739d7958c84619c0cfa
       Handler: kinesis-update-teacher.lambda_handler
       Policies: AmazonDynamoDBFullAccess
       Events:

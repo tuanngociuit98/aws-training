@@ -31,6 +31,19 @@ Resources:
         WriteCapacityUnits: 1
       TableName: !Sub ${AWS::StackName}-teachers
 
+  GetAllTeacher:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handler
+      Handler: getAll.lambda_handler
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        GetTeacher:
+          Type: Api 
+          Properties:
+            Path: /teachers
+            Method: get
+
   GetTeacher:
     Type: AWS::Serverless::Function 
     Properties:

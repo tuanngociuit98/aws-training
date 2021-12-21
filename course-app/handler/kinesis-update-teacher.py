@@ -16,21 +16,21 @@ def lambda_handler(event, context):
    
     teacher = dynamodb.query(
         TableName=os.environ['TABLE_NAME'],
-        IndexName='Teacher',
+        IndexName='Teacher-index',
         KeyConditionExpression='teacher= :name',
         ExpressionAttributeValues={
             ':name': {"S":data['old_teacher_name']}
         }    
     )
  
-    if teacher['Items'] :
+    if teacher['Items'] != []:
         courseId = teacher['Items'][0]['course_id']['S']
         response = dynamodb.update_item(
             TableName = os.environ['TABLE_NAME'],
             Key = {
                 'course_id': {'S': courseId}
             },
-            UpdateExpression = "teacher=:t",
+            UpdateExpression = "set teacher=:t",
             ExpressionAttributeValues={
                 ':t': {'S':data['new_teacher_name']},
             },
