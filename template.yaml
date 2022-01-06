@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  kinesisStream:
+    Type: "AWS::Kinesis::Stream"
+    Properties:  
+      Name: kinesisStream
+      ShardCount: 1      
+
+  handleCoursesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      CodeUri: lambda/courses
+      Tracing: Active
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonKinesisFullAccess
+      Events:
+        getCourses:
+          Type: Api
+          Properties:
+            Path: /courses
+            Method: get
+        addCourse:
+          Type: Api
+          Properties:
+            Path: /courses
+            Method: post
+        updateCourse:
+          Type: Api
+          Properties:
+            Path: /courses
+            Method: patch
+        deleteCourse:
+          Type: Api
+          Properties:
+            Path: /courses
+            Method: delete
+  handleTeacherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      CodeUri: lambda/teacher
+      Tracing: Active
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonKinesisFullAccess
+      Events:
+        getCourses:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: get
+        addCourse:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: post
+        updateCourse:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: patch
+        deleteCourse:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: delete                  
+  handleUpdateTeacherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: data_teacher_kinesis_stream.lambda_handler
+      Runtime: python3.9
+      CodeUri: lambda/teacher
+      Tracing: Active
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonKinesisFullAccess
+      Events:
+        Stream:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt kinesisStream.Arn
+            StartingPosition: LATEST
+            BatchSize: 100
+             
+  CrudLambdaIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+        Path: "/"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+             -
+              Effect: "Allow"
+              Action:
+                - "sts:AssumeRole"
+              Principal:
+                Service:
+                    - "lambda.amazonaws.com"
+                    - "apigateway.amazonaws.com"
+                    
+  CrudLambdaPolicy:
+    Type: "AWS::IAM::Policy"
+    DependsOn: [CrudLambdaIAMRole]
+    Properties:
+      PolicyName: CrudLambdaPolicy
+      Roles: [!Ref CrudLambdaIAMRole]
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action: [
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:CreateNetworkInterface",
+            "ec2:DeleteNetworkInterface",
+            "dynamodb:BatchGetItem",
+            "dynamodb:BatchWriteItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:UpdateItem",
+            "dynamodb:DescribeStream",
+            "dynamodb:GetRecords",
+            "dynamodb:GetShardIterator",
+            "dynamodb:ListStreams",
+          
+                      ]
+          Resource: ["*"]
+                
+
+
+  coursesTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: coursesTable
+      AttributeDefinitions:
+        - AttributeName: courseId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: courseId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5  
+
+  teacherTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: teacherTable
+      AttributeDefinitions:
+        - AttributeName: teacherId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: teacherId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5   
+             
+  

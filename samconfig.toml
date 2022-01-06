@@ -2,10 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "sam-api-cours"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1fcikq2gu84o6"
-s3_prefix = "sam-api-cours"
-region = "us-west-2"
+stack_name = "aws-training"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1nf1w8ewo1u47"
+s3_prefix = "aws-training"
+region = "ap-southeast-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
