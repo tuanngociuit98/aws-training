@@ -1,0 +1,167 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  Practice using Amazon API Gateway, Lambda, DynamoDb, Kinesis.
+
+Globals:
+  Function:
+    Runtime: python3.8
+    MemorySize: 128
+    
+
+Resources:
+  FunctionTeacher:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: teacher.lambda_handler
+      CodeUri: src/
+      Description: >-
+        Practice using Amazon API Gateway, Lambda, DynamoDb, Kinesis.
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE_TEACHER_NAME: !Ref TableTeacher
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableTeacher
+      Events:
+        ListTeachers:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: GET
+            RestApiId:
+              Ref: ProxyApi
+        CreateTeacher:
+          Type: Api
+          Properties:
+            Path: /teacher
+            Method: POST
+            RestApiId:
+              Ref: ProxyApi
+        CRUDTeacher:
+          Type: Api
+          Properties:
+            Path: /teacher/{proxy+}
+            Method: any
+            RestApiId:
+              Ref: ProxyApi
+
+  FunctionCourse:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Environment:
+        Variables:
+          TABLE_COURSE_NAME: !Ref TableCourse
+      Handler: course.lambda_handler
+      CodeUri: src/
+      Description: >-
+        Practice using Amazon API Gateway, Lambda, DynamoDb, Kinesis.
+      Timeout: 10
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableCourse
+      Events:
+        ListCourses:
+          Type: Api
+          Properties:
+            Path: /course
+            Method: GET
+            RestApiId:
+              Ref: ProxyApi
+        CreateCourse:
+          Type: Api
+          Properties:
+            Path: /course
+            Method: POST
+            RestApiId:
+              Ref: ProxyApi
+        CRUDCourse:
+          Type: Api
+          Properties:
+            Path: /course/{proxy+}
+            Method: any
+            RestApiId:
+              Ref: ProxyApi
+  
+  FunctionUpdateName:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Environment:
+        Variables:
+          TABLE_COURSE_NAME: !Ref TableCourse
+      Handler: update_name_by_stream.lambda_handler
+      CodeUri: src/
+      Description: >-
+        Update dynamoDb using Lambda, Kinesis.
+      Timeout: 10
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableCourse
+      Events:
+        ProcessStream:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt CatchDbTeacherStream.Arn
+            BatchSize: 10
+            StartingPosition: LATEST
+  
+  ProxyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Name:
+        Fn::Sub: ${AWS::StackName}-api
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: swagger.yaml
+
+  TableTeacher:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: teacher_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: teacher_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
+      TableName: !Sub ${AWS::StackName}-teacher
+      KinesisStreamSpecification:
+        StreamArn: !GetAtt CatchDbTeacherStream.Arn
+  
+  CatchDbTeacherStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: stream-sam
+      ShardCount: 1
+
+  TableCourse:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: course_id
+          AttributeType: S
+        - AttributeName: teacher
+          AttributeType: S
+      KeySchema:
+        - AttributeName: course_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 3
+      GlobalSecondaryIndexes: 
+        - IndexName: Teacher-index
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            WriteCapacityUnits: 1
+            ReadCapacityUnits: 2
+          KeySchema: 
+            - AttributeName: teacher
+              KeyType: HASH
+      TableName: !Sub ${AWS::StackName}-courses
