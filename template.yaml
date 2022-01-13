@@ -1,12 +1,16 @@
 AWSTemplateFormatVersion : '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
+
+
 Resources:
   kinesisStream:
     Type: "AWS::Kinesis::Stream"
     Properties:  
       Name: kinesisStream
       ShardCount: 1      
+
+  
 
   handleCoursesFunction:
     Type: AWS::Serverless::Function
@@ -24,21 +28,37 @@ Resources:
           Properties:
             Path: /courses
             Method: get
+            RestApiId:
+              Ref: ProxyApi
         addCourse:
           Type: Api
           Properties:
             Path: /courses
             Method: post
+            RestApiId:
+              Ref: ProxyApi
         updateCourse:
           Type: Api
           Properties:
             Path: /courses
             Method: patch
+            RestApiId:
+              Ref: ProxyApi
         deleteCourse:
           Type: Api
           Properties:
             Path: /courses
             Method: delete
+            RestApiId:
+              Ref: ProxyApi
+        CRUDCourse:
+          Type: Api
+          Properties:
+            Path: /courses/{proxy+}
+            Method: any
+            RestApiId:
+              Ref: ProxyApi  
+
   handleTeacherFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -55,21 +75,29 @@ Resources:
           Properties:
             Path: /teacher
             Method: get
+            RestApiId:
+              Ref: ProxyApi
         addCourse:
           Type: Api
           Properties:
             Path: /teacher
             Method: post
+            RestApiId:
+              Ref: ProxyApi
         updateCourse:
           Type: Api
           Properties:
             Path: /teacher
             Method: patch
+            RestApiId:
+              Ref: ProxyApi
         deleteCourse:
           Type: Api
           Properties:
             Path: /teacher
-            Method: delete                  
+            Method: delete
+            RestApiId:
+              Ref: ProxyApi                  
   handleUpdateTeacherFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -87,6 +115,7 @@ Resources:
             Stream: !GetAtt kinesisStream.Arn
             StartingPosition: LATEST
             BatchSize: 100
+            
              
   CrudLambdaIAMRole:
     Type: "AWS::IAM::Role"
@@ -133,7 +162,17 @@ Resources:
                       ]
           Resource: ["*"]
                 
-
+  ProxyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Name:
+        Fn::Sub: ${AWS::StackName}-api
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: samSwagger.yaml
 
   coursesTable:
     Type: 'AWS::DynamoDB::Table'

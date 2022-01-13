@@ -1,0 +1,501 @@
+openapi: "3.0.1"
+info:
+  title: teacher-course-api
+  version: "v1.0"
+  description: Proxy API
+
+paths:
+  /courses:
+    get:
+      summary: Retrieve list courses
+      description: 'Retrieve list courses'
+      responses:
+        200:
+          description: 'Successfully retrieve list course'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listCourses'
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleCoursesFunction.Arn}/invocations
+    post:
+      summary: Create new course
+      description: 'Create new course'
+      requestBody:
+        require: true
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createCourse'
+      responses:
+        200:
+          description: 'Successfully create new course'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/course'
+        400:
+          description: 'Bad request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleCoursesFunction.Arn}/invocations
+    patch:
+      summary: Update course
+      description: 'Update course'
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true 
+        content: 
+          application/json:
+            schema: '#/components/schemas/updateCourse'
+      responses:
+        200:
+          description: 'Successfully retrieve course'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/course'
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleCoursesFunction.Arn}/invocations
+    delete:
+      summary: Delete teacher
+      description: 'Delete teacher'
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Successfully delete teacher'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            schema:
+              type: string
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "DELETE"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleCoursesFunction.Arn}/invocations
+  /teacher:
+    get:
+      summary: Retrieve list teachers
+      description: 'Retrieve list teachers'
+      responses:
+        200:
+          description: 'Successfully retrieve list teachers'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listTeachers'
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleTeacherFunction.Arn}/invocations
+    post:
+      summary: Create new teacher
+      description: 'Create new teacher'
+      requestBody:
+        require: true
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createTeacher'
+      responses:
+        200:
+          description: 'Successfully create new teacher'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teacher'
+        400:
+          description: 'Bad request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleTeacherFunction.Arn}/invocations
+    patch:
+      summary: Update teacher
+      description: 'Update teacher'
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true 
+        content: 
+          application/json:
+            schema: '#/components/schemas/updateTeacher'
+      responses:
+        200:
+          description: 'Successfully retrieve teacher'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teacher'
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "POST"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleTeacherFunction.Arn}/invocations
+    delete:
+      summary: Delete teacher
+      description: 'Delete teacher'
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Successfully delete teacher'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          content:
+            schema:
+              type: string
+        500: 
+          description: 'Internal Server Error'
+          content: {}
+        400: 
+          description: 'Bad Request'
+          content: {}
+        401:
+          description: 'Unauthorized'
+          content: {}
+        403:
+          description: 'Forbidden'
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            responseTemplates:
+              application/json: {}
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+        httpMethod: "DELETE"
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${handleTeacherFunction.Arn}/invocations        
+        
+          
+components:
+  schemas:    
+    teacher:
+      type: object
+      properties:
+        teacherId:
+          type: string
+        teacherName:
+          type: string
+        gender:
+          type: integer
+        date_of_birth:
+          type: string
+    updateTeacher:
+      type: object
+      properties:
+        teacherId:
+          type: string
+        teacherName:
+          type: string
+        gender:
+          type: integer
+        date_of_birth:
+          type: string     
+    createTeacher:
+      type: object
+      properties:
+        teacherId:
+          type: string
+        teacherName:
+          type: string
+        gender:
+          type: integer
+        date_of_birth:
+          type: string    
+      required:
+        - teacherId
+        - teacherName
+    course:
+      type: object
+      properties:
+        courseId:
+          type: string
+        courseName:
+          type: string
+        price:
+          type: string
+        teacher:
+          type: string
+    updateCourse:
+      type: object
+      properties:
+       courseId:
+          type: string
+       courseName:
+          type: string
+       price:
+          type: string
+       teacher:
+          type: string
+      required:
+        - courseId     
+    createCourse:
+      type: object
+      properties:
+       courseId:
+          type: string
+       courseName:
+          type: string
+       price:
+          type: string
+       teacher:
+          type: string
+      required:
+        - courseId 
+    listTeachers:
+      type: array
+      items:
+        $ref:'#/components/schemas/teacher
+    listCourses:
+      type: array
+      items:
+        $ref:'#/components/schemas/course        
+
+   
+    
